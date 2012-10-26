@@ -1,0 +1,8 @@
+[squarepulse]
+AWSAccessKeyId = youraccesskey
+AWSSecretKey = yoursecretkey
+SQSQueue = squarepulse
+Region = eu-west-1
+
+[squarepulse.DELETE_COMPLETE]
+AWS_EC2_Instance = deprovision
