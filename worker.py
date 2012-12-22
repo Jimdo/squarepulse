@@ -4,8 +4,16 @@ import json
 import logging
 import sys
 import pprint
-import re
 import ConfigParser
+from django.template import Context, Template
+from django.template.loader import render_to_string
+from django.conf import settings
+
+settings.configure(DEBUG=True, TEMPLATE_Debug=True,
+    TEMPLATE_DIRS = (
+        "/Users/lfronius/git/squarepulse/templates",
+        )
+)
 
 config = ConfigParser.ConfigParser()
 config.read('worker.cfg')
@@ -44,7 +52,6 @@ def extract_message(rawMessage):
     message = dict(kv)
     return message
 
-
 while True:
     try:
         rawMessage = q.read()
@@ -53,8 +60,14 @@ while True:
             if any(message['ResourceStatus'] in s for s in config.sections()):
                 if message['ResourceType'].lower().replace('::','_') in dict(config.items('squarepulse.' + message['ResourceStatus'])):
                     reservations = ec2.get_all_instances(instance_ids=[message['PhysicalResourceId']])
-                    instance = reservations[0].instances[0]
-                    print(instance.private_dns_name)
+                    instance = reservations[0].instances[0].__dict__
+                    template = config.get('squarepulse.' + message['ResourceStatus'],message['ResourceType'].lower().replace('::','_'))
+                    try:
+                        string = render_to_string(template, instance)
+                        pprint.pprint(string)
+                    except Exception as e:
+                        logger.error(e, "Template not found")
+            q.delete_message(rawMessage)
 
     except KeyboardInterrupt:
         sys.exit(0)
