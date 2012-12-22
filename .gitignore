@@ -1,2 +1,3 @@
 worker.cfg
 *.swp
+.idea/*

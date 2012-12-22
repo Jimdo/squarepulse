@@ -1,6 +1,4 @@
 [squarepulse]
-AWSAccessKeyId = youraccesskey
-AWSSecretKey = yoursecretkey
 SQSQueue = squarepulse
 Region = eu-west-1
 
