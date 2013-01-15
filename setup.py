@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from distutils.core import setup
+from setuptools import setup
 
 template_files = [('templates',[]),('templates/deprovision.tpl.example',[])]
 conf_files = [('conf',glob('conf/worker.cfg.example'))]
