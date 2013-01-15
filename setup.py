@@ -2,8 +2,6 @@ import os
 from glob import glob
 from distutils.core import setup
 
-setup_kwargs = dict()
-
 template_files = [('templates',[]),('templates/deprovision.tpl.example',[])]
 conf_files = [('conf',glob('conf/worker.cfg.example'))]
 
@@ -20,5 +18,10 @@ setup(
     package_dir={'' : 'lib'},
     scripts=glob('bin/*'),
     data_files=template_files + conf_files,
-    **setup_kwargs
+        entry_points = {
+        'console_scripts': [
+            'squarepulse-worker = squarepulse.worker:main',
+        ]
+    },
+
 )
