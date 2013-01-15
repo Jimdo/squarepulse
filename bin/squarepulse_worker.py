@@ -1,22 +1,29 @@
 #!/usr/bin/env python
-import os
-import boto
-import json
-import logging
 import sys
+import os
+from os.path import dirname, join, abspath
+
+# Figure out where we're installed
+BIN_DIR = dirname(abspath(__file__))
+ROOT_DIR = dirname(BIN_DIR)
+
+# Make sure that squarepulse's 'lib' dir is in the $PYTHONPATH if we're running from
+# source.
+LIB_DIR = join(ROOT_DIR, 'lib')
+sys.path.insert(0, LIB_DIR)
+import boto
+import logging
 import pprint
 import ConfigParser
 from django.template.loader import render_to_string
 from django.conf import settings
+from squarepulse.util import extract_message
 
 settings.configure(DEBUG=True, TEMPLATE_Debug=True,
     TEMPLATE_DIRS=(
         "/Users/lfronius/git/squarepulse/templates",
         )
 )
-
-config = ConfigParser.ConfigParser()
-config.read('worker.cfg')
 
 logger = logging.getLogger('squarepulse')
 logger.setLevel(logging.DEBUG)
@@ -26,9 +33,14 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
+config = ConfigParser.ConfigParser()
+if not config.read("/Users/lfronius/git/squarepulse/conf/worker.cfg"):
+    logger.error("Could not find config file")
+    sys.exit(1)
+
 try:
     SQSQueue = config.get('squarepulse', 'sqsqueue')
-except NoOptionError as e:
+except ConfigParser.NoSectionError as e:
     logger.error(e)
     sys.exit(1)
 
@@ -48,13 +60,6 @@ if "region" in dict(config.items('squarepulse')):
 q = sqs.get_queue(SQSQueue)
 
 q.set_message_class(boto.sqs.message.RawMessage)
-
-def extract_message(rawMessage):
-    body = json.loads(rawMessage.get_body())
-    kv = [e.split('=', 1) for e in body['Message'].splitlines()]
-    kv = [(k, v.strip("'")) for k, v in kv]
-    message = dict(kv)
-    return message
 
 while True:
     try:

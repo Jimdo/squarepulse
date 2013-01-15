@@ -1,3 +1,5 @@
 worker.cfg
 *.swp
+*.pyc
+build/
 .idea/*

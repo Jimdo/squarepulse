@@ -1,0 +1,14 @@
+Source: squarepulse
+Section: utils
+Priority: optional
+Maintainer: Lars Fronius <lars@jimdo.com>
+Build-Depends: debhelper (>= 7), python-all-dev, python-setuptools (>= 0.6b3-1~), quilt (>= 0.46-7~)
+Standards-Version: 3.8.4
+X-Python-Version: >= 2.4
+Homepage: http://github.com/LarsFronius/squarepulse
+
+Package: squarepulse
+Architecture: all
+Depends: ${python:Depends}, python-django (>= 10.1)
+XB-Python-Version: ${python:Versions}
+Description:

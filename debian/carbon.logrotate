@@ -1,0 +1,7 @@
+/var/log/squarepulse/*.log {
+   daily
+   rotate 5
+   missingok
+   copytruncate
+   compress
+}
